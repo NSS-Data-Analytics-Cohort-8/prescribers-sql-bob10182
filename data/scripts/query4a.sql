@@ -82,15 +82,27 @@ LIMIT 1;
 --Answer: "IMMUN GLOB G(IGG)/GLY/IGA OV50"	$7,141.11
 
 
-
-
 -- -- 4. 
 -- --     a. For each drug in the drug table, return the drug name and then a column named 'drug_type' which says 'opioid' for drugs which have opioid_drug_flag = 'Y', says 'antibiotic' for those drugs which have antibiotic_drug_flag = 'Y', and says 'neither' for all other drugs.
+
+SELECT drug_name,REPLACE(antibiotic_drug_flag,'Y','antibiotic')drug_type
+FROM drug 
+(SELECT REPLACE(REPLACE(opioid_drug_flag,'Y','opioid'),'N','neither')drug_type
+	FROM drug);
+
+
 
 -- --     b. Building off of the query you wrote for part a, determine whether more was spent (total_drug_cost) on opioids or on antibiotics. Hint: Format the total costs as MONEY for easier comparision.
 
 -- -- 5. 
 -- --     a. How many CBSAs are in Tennessee? **Warning:** The cbsa table contains information for all states, not just Tennessee.
+
+SELECT DISTINCT fips_county.state,COUNT(cbsa.cbsa),
+FROM cbsa
+JOIN fips_county USING (fipscounty)
+WHERE state='TN'
+GROUP BY cbsa,state
+ORDER BY cbsa DESC;
 
 -- --     b. Which cbsa has the largest combined population? Which has the smallest? Report the CBSA name and total population.
 
