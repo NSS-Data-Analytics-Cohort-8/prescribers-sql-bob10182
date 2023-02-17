@@ -85,10 +85,13 @@ LIMIT 1;
 -- -- 4. 
 -- --     a. For each drug in the drug table, return the drug name and then a column named 'drug_type' which says 'opioid' for drugs which have opioid_drug_flag = 'Y', says 'antibiotic' for those drugs which have antibiotic_drug_flag = 'Y', and says 'neither' for all other drugs.
 
-SELECT drug_name,REPLACE(antibiotic_drug_flag,'Y','antibiotic')drug_type
-FROM drug 
-(SELECT REPLACE(REPLACE(opioid_drug_flag,'Y','opioid'),'N','neither')drug_type
-	FROM drug);
+SELECT 
+	CASE WHEN antibiotic_drug_flag='Y' THEN 'antibiotic'
+	WHEN opioid_drug_flag= 'Y' THEN  'opioid'
+	ELSE 'neither' END AS drug_type,
+	drug_name
+	
+FROM drug;
 
 
 
