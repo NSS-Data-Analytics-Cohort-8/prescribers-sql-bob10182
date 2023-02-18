@@ -108,23 +108,28 @@ GROUP BY drug_type;
 5. 
 -- --     a. How many CBSAs are in Tennessee? **Warning:** The cbsa table contains information for all states, not just Tennessee.
 
-SELECT DISTINCT fips_county.state,COUNT(cbsa.cbsa)AS cbsa_count
+SELECT COUNT(cbsa)AS cbsa_count,cbsaname
 FROM cbsa
-JOIN fips_county USING (fipscounty)
-WHERE fips_county.state='TN'
-GROUP BY cbsa.cbsa,fips_county.state;
+WHERE cbsaname LIKE '%TN%'
+GROUP BY cbsa,cbsaname;
+
+--Answer: 10
 
 
 
 
 -- --     b. Which cbsa has the largest combined population? Which has the smallest? Report the CBSA name and total population.
 SELECT cbsa.cbsaname,population.population
-	MAX(CASE WHEN population.population
+ 	CASE WHEN population.population=MAX THEN 'largest'
+	WHEN population.population=MIN THEN 'smallest'
+	ELSE NULL END AS 'big and small'
 FROM cbsa
 JOIN fips_county USING (fipscounty)
 JOIN population USING (fipscounty)
 GROUP by cbsa.cbsaname,population.population
 ORDER BY population.population DESC;
+
+--Answer: Largets= "Memphis, TN-MS-AR"	population:937847, Smallest= "Nashville-Davidson--Murfreesboro--Franklin, TN"	population:8773
 
 -- --     c. What is the largest (in terms of population) county which is not included in a CBSA? Report the county name and population.
 
