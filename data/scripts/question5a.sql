@@ -108,9 +108,10 @@ GROUP BY drug_type;
 5. 
 -- --     a. How many CBSAs are in Tennessee? **Warning:** The cbsa table contains information for all states, not just Tennessee.
 
-SELECT DISTINCT(COUNT(cbsaname)AS cbsa_count
+SELECT DISTINCT(COUNT(cbsaname)) AS cbsa_count,cbsa
 FROM cbsa
-WHERE cbsaname LIKE '%TN%';
+WHERE cbsaname LIKE '%TN%'
+GROUP BY cbsa;
 
 --Answer: 10
 
@@ -119,18 +120,26 @@ WHERE cbsaname LIKE '%TN%';
 
 
 -- --     b. Which cbsa has the largest combined population? Which has the smallest? Report the CBSA name and total population.
-SELECT cbsa.cbsaname,MAX(population.population) AS largest,MIN(population.population) AS smallest
+SELECT cbsa.cbsaname,population.population
 FROM cbsa
 JOIN fips_county USING (fipscounty)
 JOIN population USING (fipscounty)
-WHERE population.population=(SELECT MIN(population.population)
-											 FROM cbsa)
-GROUP by cbsa.cbsaname,population.population
 ORDER BY population.population DESC;
+	
+				
 
 --Answer: Largets= "Memphis, TN-MS-AR"	population:937847, Smallest= "Nashville-Davidson--Murfreesboro--Franklin, TN"	population:8773
 
 -- --     c. What is the largest (in terms of population) county which is not included in a CBSA? Report the county name and population.
+
+SELECT population,cbsa,cbsaname,county
+FROM population AS pop
+FULL JOIN cbsa USING(fipscounty) AS cb
+JOIN fips_county USING (fipscounty)
+WHERE cbsa IS NULL
+ORDER BY population DESC
+LIMIT 1;
+--Answer: Population: 95523			"SEVIER"
 -- -- 6. 
 -- --     a. Find all rows in the prescription table where total_claims is at least 3000. Report the drug_name and the total_claim_count.
 SELECT *
